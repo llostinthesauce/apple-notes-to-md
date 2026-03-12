@@ -9,6 +9,10 @@ def clean_filename(name):
     # Strip leading/trailing spaces
     return cleaned.strip()
 
+def applescript_escape(s: str) -> str:
+    """Escape a string for safe interpolation into an AppleScript double-quoted string."""
+    return s.replace('\\', '\\\\').replace('"', '\\"')
+
 def run_applescript(script):
     process = subprocess.Popen(['osascript', '-e', script], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     out, err = process.communicate()
@@ -22,13 +26,13 @@ def get_accounts():
     return [acc.strip() for acc in out.split(',') if acc.strip()]
 
 def get_folders(account):
-    script = f'tell application "Notes" to get name of every folder of account "{account}"'
+    script = f'tell application "Notes" to get name of every folder of account "{applescript_escape(account)}"'
     out, err = run_applescript(script)
     if not out: return []
     return [f.strip() for f in out.split(',') if f.strip()]
 
 def get_note_count(account, folder):
-    script = f'tell application "Notes" to count notes of folder "{folder}" of account "{account}"'
+    script = f'tell application "Notes" to count notes of folder "{applescript_escape(folder)}" of account "{applescript_escape(account)}"'
     out, err = run_applescript(script)
     if not out: return 0
     try:
@@ -98,7 +102,7 @@ def main():
                 script = f'''
                 try
                     tell application "Notes"
-                        set n to note {idx} of folder "{folder}" of account "{account}"
+                        set n to note {idx} of folder "{applescript_escape(folder)}" of account "{applescript_escape(account)}"
                         set nName to name of n
                         set nCreation to creation date of n as string
                         set nMod to modification date of n as string
