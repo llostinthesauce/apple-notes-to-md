@@ -35,3 +35,4 @@ The tool uses a combination of **Native AppleScript** and macOS's **`textutil`**
 
 ## 🧠 LLM / RAG Ready
 Each exported `.md` file includes a YAML-style header with the note's original title and timestamps, making it ideal for ingestion into local LLMs or RAG pipelines.
+
